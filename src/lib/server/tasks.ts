@@ -1,9 +1,9 @@
 import type { ServerAction } from '$lib/types.js';
-import { error } from '@sveltejs/kit';
+import { error, type RequestEvent } from '@sveltejs/kit';
 
 const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-type Todo = {
+export type Todo = {
 	id: number;
 	text: string;
 	done: boolean;
@@ -16,7 +16,7 @@ export const getTodos = async () => {
 	return todos;
 };
 
-export const createTodo = async (body: Omit<Todo, 'id'>) => {
+export const createTodo = async (_: RequestEvent, body: Omit<Todo, 'id'>) => {
 	await wait(100);
 
 	const todo = { id: Math.floor(Math.random() * 100000), ...body };
@@ -29,7 +29,7 @@ type EditTodoBody = {
 	payload: Partial<Todo>;
 };
 
-export const editTodo: ServerAction<EditTodoBody> = async (body) => {
+export const editTodo: ServerAction<EditTodoBody> = async (e, body) => {
 	await wait(100);
 
 	const found = todos.find((t) => t.id === body.id);
@@ -39,7 +39,7 @@ export const editTodo: ServerAction<EditTodoBody> = async (body) => {
 	return found;
 };
 
-export const deleteTodo = async (id: number) => {
+export const deleteTodo = async (e: RequestEvent, id: number) => {
 	await wait(100);
 	todos = todos.filter((t) => t.id !== id);
 };

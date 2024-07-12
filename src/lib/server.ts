@@ -1,18 +1,15 @@
-import { error, json, type RequestHandler } from '@sveltejs/kit';
+import { error, json } from '@sveltejs/kit';
 import { mapKeys } from './helpers.js';
-import type { ServerEndpointMap, ServerSuperActions } from './types.js';
+import type { ServerEndpointMap, ServerAPI, Options } from './types.js';
 
 /**
- * Builds a SuperApi handler and returns the necessary fields to instantiate the api in the client side.
- * @param endpoints
- * @param baseUrl
+ * Build the server-side API.
+ *
+ * @param options
  * @returns
  */
-export const superEndpoints = <T extends ServerEndpointMap>(
-	baseUrl: string,
-	endpoints: T
-): ServerSuperActions<T> => {
-	const handler: RequestHandler = async (e) => {
+export const superAPI = <T extends ServerEndpointMap>(options: Options<T>): ServerAPI<T> => {
+	const handler: ServerAPI<T> = async (e) => {
 		const { request, url } = e;
 
 		if (request.method !== 'POST') {
@@ -24,24 +21,24 @@ export const superEndpoints = <T extends ServerEndpointMap>(
 			error(400, 'invalid query parameters');
 		}
 
-		const endpoint = endpoints[key as keyof T];
+		const endpoint = options.actions[key as keyof T];
 		if (!endpoint) {
 			error(404, 'not found');
 		}
 
 		const body = await request.json().catch(() => null);
 
-		return json(await endpoint(body, e));
+		return json(await endpoint(e, body));
 	};
 
-	return {
-		handler,
-		api: {
-			baseUrl,
+	// add the SuperActions metadata to the handler function
+	handler.actions = {
+		...options,
 
-			// dirty hack: make typescript believe we have the actual functions as
-			// values, but make the values booleans to keep this serializable
-			actions: mapKeys(endpoints, () => true) as unknown as T
-		}
+		// dirty hack: make typescript believe we have the actual functions as
+		// values, but make the values booleans to keep this serializable
+		actions: mapKeys(options.actions, () => true) as unknown as T
 	};
+
+	return handler;
 };

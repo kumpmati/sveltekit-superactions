@@ -1,28 +1,41 @@
-import type { MaybePromise, RequestEvent, RequestHandler } from '@sveltejs/kit';
+import type { RequestEvent, RequestHandler } from '@sveltejs/kit';
+
+export type Options<T extends Record<string, unknown>> = {
+	/**
+	 * Relative path where the API is mounted. (e.g. `/api`)
+	 */
+	path: string;
+
+	/**
+	 * All the actions you want to expose to the client.
+	 */
+	actions: T;
+};
+
+export type ClientOptions = {
+	/**
+	 * If the response a redirect, navigate to the new URL (default: false)
+	 */
+	followRedirects?: boolean;
+};
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type ServerAction<Body = any, Res = any> = (
-	body: Body,
-	e: RequestEvent
-) => MaybePromise<Res>;
+export type ServerAction<Body = any, Res = any> = (e: RequestEvent, body: Body) => Promise<Res>;
 
 export type ServerEndpointMap = Record<string, ServerAction>;
 
-export type ServerSuperActions<T extends ServerEndpointMap> = {
-	handler: RequestHandler;
-
-	api: {
-		// map of available server actions
-		actions: T;
-		baseUrl: string;
-	};
+export type ServerAPI<T extends ServerEndpointMap> = RequestHandler & {
+	/**
+	 * SuperActions metadata. Passed to the `superActions` function as an argument when loading the actions on the client.
+	 */
+	actions: Options<T>;
 };
 
-export type ClientEndpoint<T extends ServerAction, Body = Parameters<T>[0]> = (
+export type ClientAction<T extends ServerAction, Body = Parameters<T>[1]> = (
 	body: Body extends void ? void : Body
 ) => ReturnType<T>;
 
 // Removes the RequestEvent argument from each endpoint
-export type ClientSuperApi<Endpoints extends ServerEndpointMap> = {
-	[Key in keyof Endpoints]: ClientEndpoint<Endpoints[Key]>;
+export type ClientAPI<Endpoints extends ServerEndpointMap> = {
+	[Key in keyof Endpoints]: ClientAction<Endpoints[Key]>;
 };

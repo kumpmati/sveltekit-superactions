@@ -1,24 +1,26 @@
 <script lang="ts">
 	import { superActions } from '$lib/client.js';
 	import { onMount } from 'svelte';
+	import type { Todo } from '$lib/server/tasks.js';
+	import type { PageData } from './$types.js';
 
 	export let data: PageData;
 
 	let text: string;
 
-	$: todoAPI = superActions(data.todoActions);
-	let todos = [];
+	$: todoAPI = superActions(data.todoAPI);
+	let todos: Todo[] = [];
 
 	const getData = () => {
 		todoAPI.getTodos().then((d) => (todos = d));
 	};
 
-	onMount(() => getData());
+	onMount(() => {
+		getData();
+	});
 </script>
 
-<h1>Welcome to your library project</h1>
-<p>Create your package using @sveltejs/package and preview/showcase your work with SvelteKit</p>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
+<h1>SvelteKit Superactions TODO App</h1>
 
 <ul>
 	{#each todos as todo}
@@ -38,5 +40,10 @@
 
 <input type="text" required bind:value={text} />
 <button on:click={() => todoAPI.createTodo({ text, done: false }).then(() => getData())}>
-	Create TODO
+	Add TODO
 </button>
+
+<br />
+
+<button on:click={() => todoAPI.shouldFail()}> Fail </button>
+<button on:click={() => todoAPI.shouldRedirect()}> Redirect </button>

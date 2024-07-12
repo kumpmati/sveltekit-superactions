@@ -1,58 +1,100 @@
-# create-svelte
+# SvelteKit Superactions
 
-Everything you need to build a Svelte library, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
+Call your SvelteKit server endpoints from your client-side code with full type safety.
 
-Read more about creating a library [in the docs](https://kit.svelte.dev/docs/packaging).
+**🚧 This library is in an early state, and breaking changes will likely happen. 🚧**
 
-## Creating a project
+## Why?
 
-If you're seeing this, you've probably already done this step. Congrats!
+While SvelteKit's data fetching patterns are great, but the ease-of-use of React Server Actions doesn't seem to have an equivalent in SvelteKit. The ability to just 'call a function' in the client-side, have it perform logic on the server and return the result to the client is sometimes very useful.
+
+SvelteKit's [form actions](https://kit.svelte.dev/docs/form-actions) are a great fit for many cases, but they can be clunky when you want to call an endpoint without a form element, or when you need to send data that is too complex to be represented in FormData.
+
+This library aims to provide additional tools alongside SvelteKit's server endpoints:
+
+## Features
+
+- [x] Type satefy between server and client
+- [x] Automatic JSON conversion (request/response)
+- [ ] Support for validation libraries via adapters (TODO)
+
+## Installation
+
+Install Superactions with your favourite package manager:
 
 ```bash
-# create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
+# npm, yarn, pnpm, bun, etc
+npm i sveltekit-superactions
 ```
 
-## Developing
+## Usage
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+A minimal setup requires the following.
 
-```bash
-npm run dev
+In a `+server.ts` file, define the actions that you want to use:
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+```ts
+// src/routes/api/+server.ts
+import { superAPI } from 'sveltekit-superactions';
+import { db } from 'some-db-library';
+import { deleteTodo } from '$lib/server/handlers';
+import { error } from '@sveltejs/kit';
+
+// Always attach the API as a POST handler
+export const POST = buildAPI({
+	// Make sure the path is the same as where you're attaching the handler.
+	// src/routes/api/+server.ts -> path: '/api'
+	path: '/api',
+	actions: {
+		// The first argument is the RequestEvent provided by SvelteKit,
+		// and the second argument is the request body decoded as JSON.
+		editTodo: async (e, body: { id: string; text?: string; done?: boolean }) => {
+			// The return value is automatically serialized as JSON.
+			// The client-side function gets its return type directly from the return type of its server action
+			return await db.update(body.id, body);
+		},
+
+		// You can alternatively just import handlers from other
+		deleteTodo
+	}
+});
 ```
 
-Everything inside `src/lib` is part of your library, everything inside `src/routes` can be used as a showcase or preview app.
+```ts
+// src/routes/+page.server.ts
 
-## Building
+import { POST as todoAPI } from './some-route/+server.ts';
 
-To build your library:
-
-```bash
-npm run package
+export const load = async () => {
+	return {
+		// To use the actions in the client-side, we must always return them from a server load function.
+		// The name of the variable doesn't matter, and you can return as many as you want.
+		todoActions: todoAPI.actions
+	};
+};
 ```
 
-To create a production version of your showcase app:
+```svelte
+<!-- src/routes/+page.svelte -->
+<script lang="ts">
+	import { superActions } from 'sveltekit-superactions';
 
-```bash
-npm run build
-```
+	export let data;
 
-You can preview the production build with `npm run preview`.
+	// To instantiate the client-side actions, call `superActions` with the data returned from the load function
+	const api = superActions(data.todoActions);
+</script>
 
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
-
-## Publishing
-
-Go into the `package.json` and give your package the desired name through the `"name"` option. Also consider adding a `"license"` field and point it to a `LICENSE` file which you can create from a template (one popular option is the [MIT license](https://opensource.org/license/mit/)).
-
-To publish your library to [npm](https://www.npmjs.com):
-
-```bash
-npm publish
+{#await api.getTodos()}
+	<p>Loading TODOs...</p>
+{:then todos}
+	<ul>
+		{#each todos as todo}
+			<li>
+				{todo.text}
+				<input type="checkbox" checked={todo.checked} />
+			</li>
+		{/each}
+	</ul>
+{/await}
 ```

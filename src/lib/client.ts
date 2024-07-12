@@ -2,7 +2,8 @@
 
 import { error } from '@sveltejs/kit';
 import { mapKeys } from './helpers.js';
-import type { ClientSuperApi, ServerEndpointMap, ServerSuperActions } from './types.js';
+import type { ClientOptions, ClientAPI, ServerEndpointMap, ServerAPI } from './types.js';
+import { goto } from '$app/navigation';
 
 /**
  * Default handler used to call the SuperActions
@@ -12,11 +13,12 @@ import type { ClientSuperApi, ServerEndpointMap, ServerSuperActions } from './ty
  * @returns
  */
 const defaultHandler = async <E extends ServerEndpointMap>(
-	api: ServerSuperActions<E>['api'],
+	api: ServerAPI<E>['actions'],
+	opts: ClientOptions,
 	endpoint: string,
 	body: unknown
 ) => {
-	const url = `${api.baseUrl}?_superaction=${endpoint}`;
+	const url = `${api.path}?_superaction=${endpoint}`;
 
 	const response = await fetch(url, {
 		method: 'POST',
@@ -27,19 +29,25 @@ const defaultHandler = async <E extends ServerEndpointMap>(
 		error(response.status, await response.json());
 	}
 
+	if (response.redirected && opts.followRedirects) {
+		goto(response.url);
+	}
+
 	return await response.json().catch(() => null);
 };
 
 /**
- * Creates client-side actions from the given superapi configuration
- * @param api
+ * Creates action functions for each endpoint provided in the given Superactions API.
+ * @param api Superactions API
  * @returns
  */
 export const superActions = <E extends ServerEndpointMap>(
-	api: ServerSuperActions<E>['api']
-): ClientSuperApi<E> => {
+	api: ServerAPI<E>['actions'],
+	opts: ClientOptions = {}
+): ClientAPI<E> => {
+	// map each key of the api to a client-side action using the default handler.
 	return mapKeys(
 		api.actions,
-		(key) => (body: unknown) => defaultHandler(api, key as string, body)
-	) as unknown as ClientSuperApi<E>;
+		(key) => (body: unknown) => defaultHandler(api, opts, key as string, body)
+	) as unknown as ClientAPI<E>;
 };

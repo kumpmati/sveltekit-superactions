@@ -1,8 +1,8 @@
 import type { PageServerLoad } from './$types.js';
-import { todoAPI } from './api/index.js';
+import { POST as todoAPI } from './api/+server.js';
 
 export const load = (async () => {
 	return {
-		todoActions: todoAPI.api
+		todoAPI: todoAPI.actions
 	};
 }) satisfies PageServerLoad;
