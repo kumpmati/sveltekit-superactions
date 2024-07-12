@@ -1,6 +1,9 @@
 {
 	"name": "sveltekit-superactions",
-	"version": "0.0.1",
+	"version": "0.0.2",
+	"repository": {
+		"url": "https://github.com/kumpmati/sveltekit-superactions"
+	},
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build && npm run package",
