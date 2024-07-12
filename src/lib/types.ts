@@ -45,5 +45,6 @@ export type ClientAPI<Endpoints extends ServerEndpointMap> = {
 /**
  * Infers the client-side API type from the given ServerAPI
  */
-export type InferClientAPI<T extends ServerAPI<Record<string, ServerAction>>> =
-	T['actions']['actions'];
+export type InferClientAPI<T extends ServerAPI<Record<string, ServerAction>>> = ClientAPI<
+	T['actions']['actions']
+>;
