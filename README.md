@@ -40,7 +40,7 @@ import { db } from '$lib/server/db';
 import { deleteTodo, findTodo, type TodoUpdate } from '$lib/server/handlers';
 
 // Always attach the API as a POST handler
-export const POST = buildAPI({
+export const POST = superAPI({
 	// Make sure the path is the same as where you're attaching the handler.
 	// src/routes/api/+server.ts -> path: '/api'
 	path: '/api',
