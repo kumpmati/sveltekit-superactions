@@ -4,6 +4,13 @@
 	"repository": {
 		"url": "https://github.com/kumpmati/sveltekit-superactions"
 	},
+	"keywords": [
+		"sveltekit",
+		"svelte",
+		"server-actions",
+		"fetch",
+		"api"
+	],
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build && npm run package",
