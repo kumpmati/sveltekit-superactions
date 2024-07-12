@@ -1,6 +1,6 @@
 import type { RequestEvent, RequestHandler } from '@sveltejs/kit';
 
-export type Options<T extends Record<string, unknown>> = {
+export type ServerOptions<T extends Record<string, unknown>> = {
 	/**
 	 * Relative path where the API is mounted. (e.g. `/api`)
 	 */
@@ -28,14 +28,22 @@ export type ServerAPI<T extends ServerEndpointMap> = RequestHandler & {
 	/**
 	 * SuperActions metadata. Passed to the `superActions` function as an argument when loading the actions on the client.
 	 */
-	actions: Options<T>;
+	actions: ServerOptions<T>;
 };
 
 export type ClientAction<T extends ServerAction, Body = Parameters<T>[1]> = (
 	body: Body extends void ? void : Body
 ) => ReturnType<T>;
 
-// Removes the RequestEvent argument from each endpoint
+/**
+ * Maps server endpoints to client actions
+ */
 export type ClientAPI<Endpoints extends ServerEndpointMap> = {
 	[Key in keyof Endpoints]: ClientAction<Endpoints[Key]>;
 };
+
+/**
+ * Infers the client-side API type from the given ServerAPI
+ */
+export type InferClientAPI<T extends ServerAPI<Record<string, ServerAction>>> =
+	T['actions']['actions'];
