@@ -85,7 +85,8 @@ export const load = async () => {
 
 	export let data;
 
-	// To instantiate the client-side actions, call `superActions` with the data returned from the load function
+	// Instantiate client-side actions by calling
+	// superActions with the data from the load function
 	const api = superActions(data.todoActions);
 </script>
 
