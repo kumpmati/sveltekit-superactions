@@ -1,6 +1,6 @@
 import { error, json } from '@sveltejs/kit';
 import { mapKeys } from './helpers.js';
-import type { ServerEndpointMap, ServerAPI, Options } from './types.js';
+import type { ServerEndpointMap, ServerAPI, ServerOptions } from './types.js';
 
 /**
  * Build the server-side API.
@@ -8,7 +8,7 @@ import type { ServerEndpointMap, ServerAPI, Options } from './types.js';
  * @param options
  * @returns
  */
-export const superAPI = <T extends ServerEndpointMap>(options: Options<T>): ServerAPI<T> => {
+export const superAPI = <T extends ServerEndpointMap>(options: ServerOptions<T>): ServerAPI<T> => {
 	const handler: ServerAPI<T> = async (e) => {
 		const { request, url } = e;
 
