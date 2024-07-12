@@ -16,7 +16,9 @@ This library aims to provide additional tools alongside SvelteKit's server endpo
 
 - [x] Type satefy between server and client
 - [x] Automatic JSON conversion (request/response)
-- [ ] Support for validation libraries via adapters (TODO)
+- [x] Schema validation
+  - [x] `zod` helper function
+  - [x] `joi` helper function
 
 ## Installation
 

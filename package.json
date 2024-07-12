@@ -1,6 +1,6 @@
 {
 	"name": "sveltekit-superactions",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"repository": {
 		"url": "https://github.com/kumpmati/sveltekit-superactions"
 	},
@@ -35,8 +35,22 @@
 		"!dist/**/*.spec.*"
 	],
 	"peerDependencies": {
+		"@sveltejs/kit": "^2.0.0",
 		"svelte": "^4.0.0",
-		"@sveltejs/kit": "^2.0.0"
+		"zod": "^3.23.8",
+		"joi": "^17.13.3"
+	},
+	"peerDependenciesMeta": {
+		"zod": {
+			"optional": true
+		},
+		"joi": {
+			"optional": true
+		}
+	},
+	"optionalDependencies": {
+		"zod": "^3.23.8",
+		"joi": "^17.13.3"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^3.0.0",
