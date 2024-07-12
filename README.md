@@ -36,9 +36,8 @@ In a `+server.ts` file, define the actions that you want to use:
 ```ts
 // src/routes/api/+server.ts
 import { superAPI } from 'sveltekit-superactions';
-import { db } from 'some-db-library';
-import { deleteTodo } from '$lib/server/handlers';
-import { error } from '@sveltejs/kit';
+import { db } from '$lib/server/db';
+import { deleteTodo, findTodo, type TodoUpdate } from '$lib/server/handlers';
 
 // Always attach the API as a POST handler
 export const POST = buildAPI({
@@ -48,14 +47,17 @@ export const POST = buildAPI({
 	actions: {
 		// The first argument is the RequestEvent provided by SvelteKit,
 		// and the second argument is the request body decoded as JSON.
-		editTodo: async (e, body: { id: string; text?: string; done?: boolean }) => {
-			// The return value is automatically serialized as JSON.
+		editTodo: async (e, body: TodoUpdate) => {
+			// The returned value is automatically serialized as JSON.
 			// The client-side function gets its return type directly from the return type of its server action
 			return await db.update(body.id, body);
 		},
 
-		// You can alternatively just import handlers from other
-		deleteTodo
+		// You can also just import handlers from other files and group them here.
+		deleteTodo,
+
+		// Or give them custom names
+		my_handler: findTodo
 	}
 });
 ```
