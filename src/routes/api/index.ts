@@ -1,12 +1,9 @@
 import { superEndpoints } from '$lib/server.js';
+import { createTodo, deleteTodo, editTodo, getTodos } from '$lib/server/tasks.js';
 
-export const taskApi = superEndpoints('/api', {
-	getTasks: async () => [
-		{ id: 1, text: 'Hello world', done: false },
-		{ id: 2, text: 'Lorem ipsum', done: true }
-	],
-
-	deleteTask: async () => {
-		return null;
-	}
+export const todoAPI = superEndpoints('/api', {
+	getTodos,
+	createTodo,
+	editTodo,
+	deleteTodo
 });

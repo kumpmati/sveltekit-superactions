@@ -2,10 +2,17 @@
 
 import { error } from '@sveltejs/kit';
 import { mapKeys } from './helpers.js';
-import type { ClientSuperApi, ServerEndpointMap, ServerSuperApi } from './types.js';
+import type { ClientSuperApi, ServerEndpointMap, ServerSuperActions } from './types.js';
 
+/**
+ * Default handler used to call the SuperActions
+ * @param api
+ * @param endpoint
+ * @param body
+ * @returns
+ */
 const defaultHandler = async <E extends ServerEndpointMap>(
-	api: ServerSuperApi<E>['actions'],
+	api: ServerSuperActions<E>['api'],
 	endpoint: string,
 	body: unknown
 ) => {
@@ -20,7 +27,7 @@ const defaultHandler = async <E extends ServerEndpointMap>(
 		error(response.status, await response.json());
 	}
 
-	return await response.json();
+	return await response.json().catch(() => null);
 };
 
 /**
@@ -29,10 +36,10 @@ const defaultHandler = async <E extends ServerEndpointMap>(
  * @returns
  */
 export const superActions = <E extends ServerEndpointMap>(
-	api: ServerSuperApi<E>['actions']
+	api: ServerSuperActions<E>['api']
 ): ClientSuperApi<E> => {
-	return mapKeys(api.endpoints, (key) => {
-		const handler = (body: unknown) => defaultHandler(api, key as string, body);
-		return handler;
-	}) as unknown as ClientSuperApi<E>;
+	return mapKeys(
+		api.actions,
+		(key) => (body: unknown) => defaultHandler(api, key as string, body)
+	) as unknown as ClientSuperApi<E>;
 };

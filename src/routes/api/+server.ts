@@ -1,3 +1,3 @@
-import { taskApi } from './index.js';
+import { todoAPI } from './index.js';
 
-export const POST = taskApi.handler;
+export const POST = todoAPI.handler;
