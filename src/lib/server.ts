@@ -1,11 +1,6 @@
 import { error, json, type RequestHandler } from '@sveltejs/kit';
-import { z } from 'zod';
 import { mapKeys } from './helpers.js';
 import type { ServerEndpointMap, ServerSuperApi } from './types.js';
-
-const querySchema = z.object({
-	_superaction: z.string().min(1)
-});
 
 /**
  * Builds a SuperApi handler and returns the necessary fields to instantiate the api in the client side.
@@ -24,12 +19,12 @@ export const superEndpoints = <T extends ServerEndpointMap>(
 			error(405, 'method not allowed');
 		}
 
-		const params = querySchema.safeParse(Object.fromEntries(url.searchParams));
-		if (!params.success) {
-			error(400, 'invalid query params');
+		const key = url.searchParams.get('_superaction');
+		if (!key) {
+			error(400, 'invalid query parameters');
 		}
 
-		const endpoint = endpoints[params.data._superaction as keyof T];
+		const endpoint = endpoints[key as keyof T];
 		if (!endpoint) {
 			error(404, 'not found');
 		}
