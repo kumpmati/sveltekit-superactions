@@ -1,13 +1,17 @@
 import type { ServerAction } from '$lib/types.js';
 import { error, type RequestEvent } from '@sveltejs/kit';
+import Joi from 'joi';
+import { z } from 'zod';
 
 const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-export type Todo = {
-	id: number;
-	text: string;
-	done: boolean;
-};
+export const todoSchema = z.object({
+	id: z.number().int(),
+	text: z.string(),
+	done: z.boolean()
+});
+
+export type Todo = z.infer<typeof todoSchema>;
 
 let todos: Todo[] = [];
 
@@ -28,6 +32,14 @@ type EditTodoBody = {
 	id: number;
 	payload: Partial<Todo>;
 };
+
+export const editTodoSchema = Joi.object({
+	id: Joi.number().integer().required(),
+	payload: Joi.object({
+		text: Joi.string().optional(),
+		done: Joi.bool().optional()
+	})
+});
 
 export const editTodo: ServerAction<EditTodoBody> = async (e, body) => {
 	await wait(100);

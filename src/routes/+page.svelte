@@ -8,7 +8,9 @@
 
 	let text: string;
 
-	$: todoAPI = superActions(data.todoAPI);
+	$: todoAPI = superActions(data.todoAPI, {
+		followRedirects: true
+	});
 	let todos: Todo[] = [];
 
 	const getData = () => {
