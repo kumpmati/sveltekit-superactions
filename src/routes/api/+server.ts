@@ -19,6 +19,12 @@ export const POST = superAPI({
 
 		shouldRedirect: async () => {
 			redirect(302, '/other-page');
+		},
+
+		extraHeaders: async (e) => {
+			console.log('headers', Object.fromEntries(e.request.headers));
+
+			return null;
 		}
 	}
 });

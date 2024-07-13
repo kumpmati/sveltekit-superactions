@@ -2,38 +2,41 @@
 
 import { error } from '@sveltejs/kit';
 import { mapKeys } from './helpers.js';
-import type { ClientOptions, ClientAPI, ServerEndpointMap, ServerAPI } from './types.js';
+import type {
+	ClientOptions,
+	ClientAPI,
+	ServerEndpointMap,
+	ServerAPI,
+	ClientActionOptions
+} from './types.js';
 import { goto } from '$app/navigation';
 
-/**
- * Default handler used to call the SuperActions
- * @param api
- * @param endpoint
- * @param body
- * @returns
- */
-const defaultHandler = async <E extends ServerEndpointMap>(
+const createDefaultHandler = <E extends ServerEndpointMap>(
 	api: ServerAPI<E>['actions'],
-	opts: ClientOptions,
-	endpoint: string,
-	body: unknown
+	clientOpts: ClientOptions
 ) => {
-	const url = `${api.path}?_superaction=${endpoint}`;
+	return async (endpoint: string, body: unknown, options?: ClientActionOptions) => {
+		const url = `${api.path}?_sa=${endpoint}`;
 
-	const response = await fetch(url, {
-		method: 'POST',
-		body: body ? JSON.stringify(body) : undefined
-	});
+		const fetchOptions: RequestInit = {
+			method: 'POST',
+			body: body ? JSON.stringify(body) : undefined
+		};
 
-	if (!response.ok) {
-		error(response.status, await response.json());
-	}
+		Object.assign(fetchOptions, options?.fetch);
 
-	if (response.redirected && opts.followRedirects) {
-		goto(response.url);
-	}
+		const response = await fetch(url, fetchOptions);
 
-	return await response.json().catch(() => null);
+		if (!response.ok) {
+			error(response.status, await response.json().catch(() => null));
+		}
+
+		if (response.redirected && (options?.followRedirects ?? clientOpts.followRedirects)) {
+			await goto(response.url);
+		}
+
+		return await response.json().catch(() => null);
+	};
 };
 
 /**
@@ -45,9 +48,11 @@ export const superActions = <E extends ServerEndpointMap>(
 	api: ServerAPI<E>['actions'],
 	opts: ClientOptions = {}
 ): ClientAPI<E> => {
+	const handler = createDefaultHandler<E>(api, opts);
+
 	// map each key of the api to a client-side action using the default handler.
 	return mapKeys(
 		api.actions,
-		(key) => (body: unknown) => defaultHandler(api, opts, key as string, body)
+		(key) => (body: unknown, opts?: ClientActionOptions) => handler(key as string, body, opts)
 	) as unknown as ClientAPI<E>;
 };
