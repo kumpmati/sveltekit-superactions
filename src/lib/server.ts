@@ -35,8 +35,8 @@ export const superAPI = <T extends ServerEndpointMap>(options: ServerOptions<T>)
 	handler.actions = {
 		...options,
 
-		// dirty hack: make typescript believe we have the actual functions as
-		// values, but make the values booleans to keep this serializable
+		// Dirty hack, but it works. This makes types simpler and
+		// makes ctrl+click in the client go to the correct place.
 		actions: mapKeys(options.actions, () => true) as unknown as T
 	};
 
