@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { superActions } from '$lib/client.js';
 	import { onMount } from 'svelte';
-	import type { Todo } from '$lib/server/tasks.js';
 	import type { PageData } from './$types.js';
+	import type { Todo } from './api/tasks.js';
 
 	export let data: PageData;
 
