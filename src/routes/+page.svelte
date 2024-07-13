@@ -8,9 +8,8 @@
 
 	let text: string;
 
-	$: todoAPI = superActions(data.todoAPI, {
-		followRedirects: true
-	});
+	$: todoAPI = superActions(data.todoAPI);
+
 	let todos: Todo[] = [];
 
 	const getData = () => {
@@ -48,4 +47,19 @@
 <br />
 
 <button on:click={() => todoAPI.shouldFail()}> Fail </button>
-<button on:click={() => todoAPI.shouldRedirect()}> Redirect </button>
+<button on:click={() => todoAPI.shouldRedirect(undefined, { followRedirects: true })}>
+	Redirect
+</button>
+
+<button
+	on:click={() =>
+		todoAPI.extraHeaders(undefined, {
+			fetch: {
+				headers: {
+					'x-custom-header': 'hello world'
+				}
+			}
+		})}
+>
+	Send extra headers
+</button>
