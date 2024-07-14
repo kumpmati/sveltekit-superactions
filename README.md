@@ -2,7 +2,7 @@
 
 [![Test](https://github.com/kumpmati/sveltekit-superactions/actions/workflows/test.yml/badge.svg)](https://github.com/kumpmati/sveltekit-superactions/actions/workflows/test.yml)
 
-Call your server code like it was a normal function.
+Call your server code like normal functions.
 
 **🚧 This library is in an early state, and breaking changes will likely happen. 🚧**
 
