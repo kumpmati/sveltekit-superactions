@@ -1,8 +1,8 @@
 import { error, json, type RequestHandler } from '@sveltejs/kit';
 import { mapKeys } from './helpers.js';
-import type { ServerEndpointMap, ServerAPI, ServerOptions } from './types.js';
+import type { ServerActionMap, ServerAPI, ServerOptions } from './types.js';
 
-const createDefaultHandler = <T extends ServerEndpointMap>(
+const createDefaultHandler = <T extends ServerActionMap>(
 	serverOpts: ServerOptions<T>
 ): RequestHandler => {
 	return async (e) => {
@@ -35,7 +35,7 @@ const createDefaultHandler = <T extends ServerEndpointMap>(
  * @param options
  * @returns
  */
-export const superAPI = <T extends ServerEndpointMap, RH extends RequestHandler = RequestHandler>(
+export const superAPI = <T extends ServerActionMap, RH extends RequestHandler = RequestHandler>(
 	options: ServerOptions<T>
 ): ServerAPI<T, RH> => {
 	const handler = createDefaultHandler(options) as ServerAPI<T, RH>;

@@ -6,7 +6,7 @@ const noop = async () => null;
 
 describe('client', () => {
 	describe('superActions', () => {
-		it('contains all given server endpoints as functions', () => {
+		it('contains all given actions as functions', () => {
 			const serverActions = { a: noop, b: noop, c: noop };
 			const server = superAPI({ path: '/', actions: serverActions });
 
