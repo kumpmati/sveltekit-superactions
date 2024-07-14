@@ -1,6 +1,7 @@
 import { error, json, type RequestHandler } from '@sveltejs/kit';
 import { mapKeys } from './helpers.js';
 import type { ServerActionMap, ServerAPI, ServerOptions } from './types.js';
+import { parse } from 'devalue';
 
 const createDefaultHandler = <T extends ServerActionMap>(
 	serverOpts: ServerOptions<T>
@@ -22,8 +23,11 @@ const createDefaultHandler = <T extends ServerActionMap>(
 			error(404, 'not found');
 		}
 
-		// Return a null body if no body is found or if the JSON decoding fails
-		const body = await request.json().catch(() => null);
+		// Return a null body if no body is found or if the devalue decoding fails
+		const body = await request
+			.text()
+			.then((d) => parse(d))
+			.catch(() => null);
 
 		return json(await endpoint(e, body));
 	};

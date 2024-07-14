@@ -10,6 +10,7 @@ import type {
 	ClientActionOptions
 } from './types.js';
 import { goto } from '$app/navigation';
+import { parse, stringify } from 'devalue';
 
 const createDefaultHandler = <E extends ServerActionMap>(
 	api: ServerAPI<E>['actions'],
@@ -20,7 +21,7 @@ const createDefaultHandler = <E extends ServerActionMap>(
 
 		const fetchOptions: RequestInit = {
 			method: 'POST',
-			body: body ? JSON.stringify(body) : undefined
+			body: body ? stringify(body) : undefined
 		};
 
 		Object.assign(fetchOptions, options?.fetch);
@@ -35,7 +36,10 @@ const createDefaultHandler = <E extends ServerActionMap>(
 			await goto(response.url);
 		}
 
-		return await response.json().catch(() => null);
+		return await response
+			.text()
+			.then((d) => parse(d))
+			.catch(() => null); // return null as a fallback
 	};
 };
 

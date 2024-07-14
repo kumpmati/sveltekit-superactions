@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { superAPI } from './server.js';
 import type { RequestEvent } from '@sveltejs/kit';
+import { stringify } from 'devalue';
 
 const noop = async () => null;
 
@@ -63,7 +64,10 @@ describe('server', () => {
 
 			try {
 				const res = await api({
-					request: { method: 'POST', json: () => Promise.resolve('test body') } as Request,
+					request: {
+						method: 'POST',
+						text: () => Promise.resolve(stringify('test body'))
+					} as Request,
 					url: actionURL('a')
 				} as RequestEvent);
 
@@ -87,7 +91,10 @@ describe('server', () => {
 			const api = superAPI({ path: '/', actions: { a: action } });
 
 			await api({
-				request: { method: 'POST', json: () => Promise.resolve(expectedBody) } as Request,
+				request: {
+					method: 'POST',
+					text: () => Promise.resolve(stringify(expectedBody))
+				} as unknown as Request,
 				url: actionURL('a')
 			} as RequestEvent);
 
@@ -106,7 +113,7 @@ describe('server', () => {
 
 			expect(
 				api({
-					request: { method: 'POST', json: () => Promise.resolve({}) } as Request,
+					request: { method: 'POST', text: () => Promise.resolve(stringify({})) } as Request,
 					url: actionURL('a')
 				} as RequestEvent)
 			).rejects.toThrowError('test error');
