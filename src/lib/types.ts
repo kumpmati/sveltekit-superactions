@@ -39,10 +39,10 @@ export type ClientActionOptions = {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type ServerAction<Body = any, Res = any> = (e: RequestEvent, body: Body) => Promise<Res>;
 
-export type ServerEndpointMap = Record<string, ServerAction>;
+export type ServerActionMap = Record<string, ServerAction>;
 
 export type ServerAPI<
-	T extends ServerEndpointMap = ServerEndpointMap,
+	T extends ServerActionMap = ServerActionMap,
 	RH extends RequestHandler = RequestHandler
 > = RH & {
 	/**
@@ -57,9 +57,9 @@ export type ClientAction<T extends ServerAction, Body = Parameters<T>[1]> = (
 ) => ReturnType<T>;
 
 /**
- * Transforms a map of server endpoints to a map of client actions
+ * Transforms a map of server actions to a map of client actions
  */
-export type ClientAPI<Endpoints extends ServerEndpointMap> = {
+export type ClientAPI<Endpoints extends ServerActionMap> = {
 	[Key in keyof Endpoints]: ClientAction<Endpoints[Key]>;
 };
 

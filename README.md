@@ -4,7 +4,9 @@
 
 Call your server code from the client like normal functions.
 
-**🚧 This library is in an early state, and breaking changes will likely happen. 🚧**
+**🚧 This library is in an early state, and breaking changes will likely happen before a v1.0 release! 🚧**
+
+[Documentation](https://superactions.matsku.dev)
 
 ## Why?
 
@@ -12,7 +14,7 @@ While SvelteKit's data fetching patterns are great, but the ease-of-use of React
 
 SvelteKit's [form actions](https://kit.svelte.dev/docs/form-actions) are a great fit for many cases, but they can be clunky when you want to call an endpoint without a form element, or when you need to send data that is too complex to be represented in FormData.
 
-This library aims to provide additional tools alongside SvelteKit's server endpoints:
+This library aims to provide additional tools alongside SvelteKit's API routes:
 
 ## Features
 

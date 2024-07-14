@@ -5,13 +5,13 @@ import { mapKeys } from './helpers.js';
 import type {
 	ClientOptions,
 	ClientAPI,
-	ServerEndpointMap,
+	ServerActionMap,
 	ServerAPI,
 	ClientActionOptions
 } from './types.js';
 import { goto } from '$app/navigation';
 
-const createDefaultHandler = <E extends ServerEndpointMap>(
+const createDefaultHandler = <E extends ServerActionMap>(
 	api: ServerAPI<E>['actions'],
 	clientOpts: ClientOptions
 ) => {
@@ -44,7 +44,7 @@ const createDefaultHandler = <E extends ServerEndpointMap>(
  * @param api Superactions API
  * @returns
  */
-export const superActions = <E extends ServerEndpointMap>(
+export const superActions = <E extends ServerActionMap>(
 	api: ServerAPI<E>['actions'],
 	opts: ClientOptions = {}
 ): ClientAPI<E> => {
