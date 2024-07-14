@@ -8,7 +8,7 @@ const actionURL = (name: string) => new URL(`http://localhost:5173/?_sa=${name}`
 
 describe('server', () => {
 	describe('default handler', () => {
-		it('should throw when receiving a non-POST request', async () => {
+		it('throws when receiving a non-POST request', async () => {
 			const api = superAPI({ path: '/', actions: { a: noop } });
 
 			try {
@@ -23,7 +23,7 @@ describe('server', () => {
 			}
 		});
 
-		it('should throw when called without proper url params', async () => {
+		it('throws when called without proper url params', async () => {
 			const api = superAPI({ path: '/', actions: { a: noop } });
 
 			try {
@@ -38,7 +38,7 @@ describe('server', () => {
 			}
 		});
 
-		it('should throw when an action is not found', async () => {
+		it('throws when an action is not found', async () => {
 			const api = superAPI({
 				path: '/',
 				actions: { a: noop }
@@ -56,7 +56,7 @@ describe('server', () => {
 			}
 		});
 
-		it('should run the action function and return its return value as JSON', async () => {
+		it('runs the action function and returns its return value as JSON', async () => {
 			const action = vi.fn(async () => 'my value');
 
 			const api = superAPI({ path: '/', actions: { a: action } });
@@ -74,7 +74,7 @@ describe('server', () => {
 			}
 		});
 
-		it('should give the event and request body as arguments to the action', async () => {
+		it('gives the event and request body as arguments to the action', async () => {
 			const expectedBody = { hello: 'world' };
 
 			const action = vi.fn(async (e, body) => {
@@ -94,7 +94,7 @@ describe('server', () => {
 			expect(action).toHaveBeenCalledOnce();
 		});
 
-		it('should throw whatever the action throws', async () => {
+		it('throws whatever the action throws', async () => {
 			const api = superAPI({
 				path: '/',
 				actions: {
@@ -114,7 +114,7 @@ describe('server', () => {
 	});
 
 	describe('output API', () => {
-		it('should have the input path in the output', () => {
+		it('has the input path in the output', () => {
 			const api = superAPI({
 				path: '/my-custom-path',
 				actions: {}
@@ -123,7 +123,7 @@ describe('server', () => {
 			expect(api.actions.path).toEqual('/my-custom-path');
 		});
 
-		it('should contain all input keys in the output', () => {
+		it('contains all input keys in the output', () => {
 			const obj = { a: noop, b: noop, c: noop, d: noop };
 
 			const expectedKeys = Object.keys(obj);
@@ -136,7 +136,7 @@ describe('server', () => {
 			expect(Object.keys(api.actions.actions)).toEqual(expectedKeys);
 		});
 
-		it('should have serializable output', () => {
+		it('has serializable output', () => {
 			const api = superAPI({
 				path: '/some-route',
 				actions: { a: noop, b: noop }
