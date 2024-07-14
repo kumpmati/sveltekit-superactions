@@ -1,5 +1,7 @@
 # SvelteKit Superactions
 
+[![Test](https://github.com/kumpmati/sveltekit-superactions/actions/workflows/test.yml/badge.svg)](https://github.com/kumpmati/sveltekit-superactions/actions/workflows/test.yml)
+
 Call your SvelteKit server endpoints from your client-side code with full type safety.
 
 **🚧 This library is in an early state, and breaking changes will likely happen. 🚧**
