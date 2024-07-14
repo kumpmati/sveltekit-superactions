@@ -1,13 +1,21 @@
-import { describe, expect, it, vi } from 'vitest';
+import createFetchMock from 'vitest-fetch-mock';
+import { beforeEach, vi } from 'vitest';
+
+const fetchMocker = createFetchMock(vi);
+fetchMocker.enableMocks();
+
+import { describe, expect, it } from 'vitest';
 import { superAPI } from './server.js';
 import type { RequestEvent } from '@sveltejs/kit';
-import { stringify } from 'devalue';
+import { parse, stringify } from 'devalue';
 
 const noop = async () => null;
 
 const actionURL = (name: string) => new URL(`http://localhost:5173/?_sa=${name}`);
 
 describe('server', () => {
+	beforeEach(() => fetchMocker.resetMocks());
+
 	describe('default handler', () => {
 		it('throws when receiving a non-POST request', async () => {
 			const api = superAPI({ path: '/', actions: { a: noop } });
@@ -57,8 +65,8 @@ describe('server', () => {
 			}
 		});
 
-		it('runs the action function and returns its return value as JSON', async () => {
-			const action = vi.fn(async () => 'my value');
+		it('runs the action function and returns its return value as a devalue string', async () => {
+			const action = vi.fn(async () => ({ foo: 'bar' }));
 
 			const api = superAPI({ path: '/', actions: { a: action } });
 
@@ -71,7 +79,8 @@ describe('server', () => {
 					url: actionURL('a')
 				} as RequestEvent);
 
-				expect(await res.json()).toEqual('my value');
+				// get the result of the mock request and parse its body
+				expect(await res.text().then((d) => parse(d))).toEqual({ foo: 'bar' });
 				expect(action).toHaveBeenCalledOnce();
 			} catch (err) {
 				expect.fail(err as string);

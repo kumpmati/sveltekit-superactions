@@ -34,29 +34,27 @@ const createDefaultHandler = <E extends ServerActionMap>(
 
 		if (response.redirected && (options?.followRedirects ?? clientOpts.followRedirects)) {
 			await goto(response.url);
+			return null;
 		}
 
-		return await response
-			.text()
-			.then((d) => parse(d))
-			.catch(() => null); // return null as a fallback
+		return await response.text().then((d) => (d ? parse(d) : null));
 	};
 };
 
 /**
- * Creates action functions for each endpoint provided in the given Superactions API.
- * @param api Superactions API
- * @returns
+ * Creates a client from the given API actions.
+ *
+ * @param actions API actions
  */
 export const superActions = <E extends ServerActionMap>(
-	api: ServerAPI<E>['actions'],
+	actions: ServerAPI<E>['actions'],
 	opts: ClientOptions = {}
 ): ClientAPI<E> => {
-	const handler = createDefaultHandler<E>(api, opts);
+	const handler = createDefaultHandler<E>(actions, opts);
 
 	// map each key of the api to a client-side action using the default handler.
 	return mapKeys(
-		api.actions,
+		actions.actions,
 		(key) => (body: unknown, opts?: ClientActionOptions) => handler(key as string, body, opts)
 	) as unknown as ClientAPI<E>;
 };

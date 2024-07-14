@@ -71,7 +71,8 @@
 		"typescript": "^5.0.0",
 		"typescript-eslint": "^8.0.0-alpha.20",
 		"vite": "^5.0.11",
-		"vitest": "^1.2.0"
+		"vitest": "^2.0.2",
+		"vitest-fetch-mock": "^0.3.0"
 	},
 	"svelte": "./dist/index.js",
 	"types": "./dist/index.d.ts",
