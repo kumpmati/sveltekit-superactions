@@ -17,5 +17,10 @@ describe('client', () => {
 		});
 	});
 
-	describe.todo('default handler');
+	describe('default handler', () => {
+		it.todo('provides the function argument as body');
+		it.todo('calls the correct endpoint');
+		it.todo('follows redirects');
+		it.todo('throws errors returned from the server');
+	});
 });
