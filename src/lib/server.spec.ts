@@ -1,12 +1,21 @@
-import { describe, expect, it, vi } from 'vitest';
+import createFetchMock from 'vitest-fetch-mock';
+import { beforeEach, vi } from 'vitest';
+
+const fetchMocker = createFetchMock(vi);
+fetchMocker.enableMocks();
+
+import { describe, expect, it } from 'vitest';
 import { superAPI } from './server.js';
 import type { RequestEvent } from '@sveltejs/kit';
+import { parse, stringify } from 'devalue';
 
 const noop = async () => null;
 
 const actionURL = (name: string) => new URL(`http://localhost:5173/?_sa=${name}`);
 
 describe('server', () => {
+	beforeEach(() => fetchMocker.resetMocks());
+
 	describe('default handler', () => {
 		it('throws when receiving a non-POST request', async () => {
 			const api = superAPI({ path: '/', actions: { a: noop } });
@@ -56,18 +65,22 @@ describe('server', () => {
 			}
 		});
 
-		it('runs the action function and returns its return value as JSON', async () => {
-			const action = vi.fn(async () => 'my value');
+		it('runs the action function and returns its return value as a devalue string', async () => {
+			const action = vi.fn(async () => ({ foo: 'bar' }));
 
 			const api = superAPI({ path: '/', actions: { a: action } });
 
 			try {
 				const res = await api({
-					request: { method: 'POST', json: () => Promise.resolve('test body') } as Request,
+					request: {
+						method: 'POST',
+						text: () => Promise.resolve(stringify('test body'))
+					} as Request,
 					url: actionURL('a')
 				} as RequestEvent);
 
-				expect(await res.json()).toEqual('my value');
+				// get the result of the mock request and parse its body
+				expect(await res.text().then((d) => parse(d))).toEqual({ foo: 'bar' });
 				expect(action).toHaveBeenCalledOnce();
 			} catch (err) {
 				expect.fail(err as string);
@@ -87,7 +100,10 @@ describe('server', () => {
 			const api = superAPI({ path: '/', actions: { a: action } });
 
 			await api({
-				request: { method: 'POST', json: () => Promise.resolve(expectedBody) } as Request,
+				request: {
+					method: 'POST',
+					text: () => Promise.resolve(stringify(expectedBody))
+				} as unknown as Request,
 				url: actionURL('a')
 			} as RequestEvent);
 
@@ -106,7 +122,7 @@ describe('server', () => {
 
 			expect(
 				api({
-					request: { method: 'POST', json: () => Promise.resolve({}) } as Request,
+					request: { method: 'POST', text: () => Promise.resolve(stringify({})) } as Request,
 					url: actionURL('a')
 				} as RequestEvent)
 			).rejects.toThrowError('test error');

@@ -10,6 +10,7 @@ import type {
 	ClientActionOptions
 } from './types.js';
 import { goto } from '$app/navigation';
+import { parse, stringify } from 'devalue';
 
 const createDefaultHandler = <E extends ServerActionMap>(
 	api: ServerAPI<E>['actions'],
@@ -20,7 +21,7 @@ const createDefaultHandler = <E extends ServerActionMap>(
 
 		const fetchOptions: RequestInit = {
 			method: 'POST',
-			body: body ? JSON.stringify(body) : undefined
+			body: body ? stringify(body) : undefined
 		};
 
 		Object.assign(fetchOptions, options?.fetch);
@@ -33,26 +34,27 @@ const createDefaultHandler = <E extends ServerActionMap>(
 
 		if (response.redirected && (options?.followRedirects ?? clientOpts.followRedirects)) {
 			await goto(response.url);
+			return null;
 		}
 
-		return await response.json().catch(() => null);
+		return await response.text().then((d) => (d ? parse(d) : null));
 	};
 };
 
 /**
- * Creates action functions for each endpoint provided in the given Superactions API.
- * @param api Superactions API
- * @returns
+ * Creates a client from the given API actions.
+ *
+ * @param actions API actions
  */
 export const superActions = <E extends ServerActionMap>(
-	api: ServerAPI<E>['actions'],
+	actions: ServerAPI<E>['actions'],
 	opts: ClientOptions = {}
 ): ClientAPI<E> => {
-	const handler = createDefaultHandler<E>(api, opts);
+	const handler = createDefaultHandler<E>(actions, opts);
 
 	// map each key of the api to a client-side action using the default handler.
 	return mapKeys(
-		api.actions,
+		actions.actions,
 		(key) => (body: unknown, opts?: ClientActionOptions) => handler(key as string, body, opts)
 	) as unknown as ClientAPI<E>;
 };
