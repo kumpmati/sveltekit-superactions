@@ -51,7 +51,7 @@ export const POST = endpoint({
 	// src/routes/api/+server.ts -> path: '/api'
 	path: '/api',
 	actions: {
-		// The first argument is the RequestEvent provided by SvelteKit,
+		// e is the RequestEvent provided by SvelteKit,
 		// and the second argument is the request body decoded as JSON.
 		editTodo: async (e, body: TodoUpdate) => {
 			// The returned value is automatically serialized as JSON.
