@@ -32,12 +32,14 @@ const createDefaultHandler = <T extends ServerActionMap>(
 };
 
 /**
- * Build the server-side API.
+ * Used to build an endpoint that holds one or more action(s),
+ * where an action is a function that the client can call like a normal `async` function.
  *
- * @param options
- * @returns
+ * It returns a request handler function that can be mounted as a POST handler.
+ *
+ * @param options (Optional) additional configuration
  */
-export const superAPI = <T extends ServerActionMap, RH extends RequestHandler = RequestHandler>(
+export const endpoint = <T extends ServerActionMap, RH extends RequestHandler = RequestHandler>(
 	options: ServerOptions<T>
 ): ServerAPI<T, RH> => {
 	const handler = createDefaultHandler(options) as ServerAPI<T, RH>;

@@ -5,7 +5,7 @@ const fetchMocker = createFetchMock(vi);
 fetchMocker.enableMocks();
 
 import { describe, expect, it } from 'vitest';
-import { superAPI } from './server.js';
+import { endpoint } from './server.js';
 import type { RequestEvent } from '@sveltejs/kit';
 import { parse, stringify } from 'devalue';
 
@@ -18,10 +18,10 @@ describe('server', () => {
 
 	describe('default handler', () => {
 		it('throws when receiving a non-POST request', async () => {
-			const api = superAPI({ path: '/', actions: { a: noop } });
+			const ep = endpoint({ path: '/', actions: { a: noop } });
 
 			try {
-				await api({
+				await ep({
 					request: { method: 'GET' } as Request,
 					url: actionURL('a')
 				} as RequestEvent);
@@ -33,10 +33,10 @@ describe('server', () => {
 		});
 
 		it('throws when called without proper url params', async () => {
-			const api = superAPI({ path: '/', actions: { a: noop } });
+			const ep = endpoint({ path: '/', actions: { a: noop } });
 
 			try {
-				await api({
+				await ep({
 					request: { method: 'POST' } as Request,
 					url: new URL('http://localhost:5173/') // missing _sa query parameter
 				} as RequestEvent);
@@ -48,13 +48,10 @@ describe('server', () => {
 		});
 
 		it('throws when an action is not found', async () => {
-			const api = superAPI({
-				path: '/',
-				actions: { a: noop }
-			});
+			const ep = endpoint({ path: '/', actions: { a: noop } });
 
 			try {
-				await api({
+				await ep({
 					request: { method: 'POST' } as Request,
 					url: actionURL('b') // non-existing route
 				} as RequestEvent);
@@ -68,10 +65,10 @@ describe('server', () => {
 		it('runs the action function and returns its return value as a devalue string', async () => {
 			const action = vi.fn(async () => ({ foo: 'bar' }));
 
-			const api = superAPI({ path: '/', actions: { a: action } });
+			const ep = endpoint({ path: '/', actions: { a: action } });
 
 			try {
-				const res = await api({
+				const res = await ep({
 					request: {
 						method: 'POST',
 						text: () => Promise.resolve(stringify('test body'))
@@ -97,9 +94,9 @@ describe('server', () => {
 				return null;
 			});
 
-			const api = superAPI({ path: '/', actions: { a: action } });
+			const ep = endpoint({ path: '/', actions: { a: action } });
 
-			await api({
+			await ep({
 				request: {
 					method: 'POST',
 					text: () => Promise.resolve(stringify(expectedBody))
@@ -111,7 +108,7 @@ describe('server', () => {
 		});
 
 		it('throws whatever the action throws', async () => {
-			const api = superAPI({
+			const ep = endpoint({
 				path: '/',
 				actions: {
 					a: async () => {
@@ -121,7 +118,7 @@ describe('server', () => {
 			});
 
 			expect(
-				api({
+				ep({
 					request: { method: 'POST', text: () => Promise.resolve(stringify({})) } as Request,
 					url: actionURL('a')
 				} as RequestEvent)
@@ -131,12 +128,9 @@ describe('server', () => {
 
 	describe('output API', () => {
 		it('has the input path in the output', () => {
-			const api = superAPI({
-				path: '/my-custom-path',
-				actions: {}
-			});
+			const ep = endpoint({ path: '/my-custom-path', actions: {} });
 
-			expect(api.actions.path).toEqual('/my-custom-path');
+			expect(ep.actions.path).toEqual('/my-custom-path');
 		});
 
 		it('contains all input keys in the output', () => {
@@ -144,27 +138,16 @@ describe('server', () => {
 
 			const expectedKeys = Object.keys(obj);
 
-			const api = superAPI({
-				path: '/',
-				actions: obj
-			});
+			const ep = endpoint({ path: '/', actions: obj });
 
-			expect(Object.keys(api.actions.actions)).toEqual(expectedKeys);
+			expect(Object.keys(ep.actions.actions)).toEqual(expectedKeys);
 		});
 
 		it('has serializable output', () => {
-			const api = superAPI({
-				path: '/some-route',
-				actions: { a: noop, b: noop }
-			});
-
-			const counterExample = { a: noop };
-
-			// Functions can't be serialized to JSON
-			expect(JSON.parse(JSON.stringify(counterExample))).not.toEqual(counterExample);
+			const ep = endpoint({ path: '/some-route', actions: { a: noop, b: noop } });
 
 			// API output should have only serializable information.
-			expect(JSON.parse(JSON.stringify(api.actions))).toEqual(api.actions);
+			expect(JSON.parse(JSON.stringify(ep.actions))).toEqual(ep.actions);
 		});
 	});
 });

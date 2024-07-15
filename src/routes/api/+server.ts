@@ -1,11 +1,11 @@
-import { superAPI } from '$lib/server.js';
+import { endpoint } from '$lib/server.js';
 import { createTodo, deleteTodo, editTodo, editTodoSchema, getTodos, todoSchema } from './tasks.js';
 import { joi } from '$lib/validate/joi.js';
 import { zod } from '$lib/validate/zod.js';
 import { error, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
 
-export const POST = superAPI({
+export const POST = endpoint({
 	path: '/api',
 	actions: {
 		getTodos: getTodos,
