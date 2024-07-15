@@ -8,6 +8,7 @@
 
 	let text: string;
 
+	$: spreadAPI = superActions(data.spreadAPI);
 	$: todoAPI = superActions(data.todoAPI);
 
 	let todos: Todo[] = [];
@@ -22,6 +23,8 @@
 </script>
 
 <h1>SvelteKit Superactions TODO App</h1>
+
+<button on:click={() => spreadAPI.greet('World').then((d) => alert(d.greeting))}>Greet</button>
 
 <ul>
 	{#each todos as todo}
