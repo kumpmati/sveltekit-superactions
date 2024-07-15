@@ -41,12 +41,12 @@ In a `+server.ts` file, define the actions that you want to use:
 
 ```ts
 // src/routes/api/+server.ts
-import { superAPI } from 'sveltekit-superactions';
+import { endpoint } from 'sveltekit-superactions';
 import { db } from '$lib/server/db';
 import { deleteTodo, findTodo, type TodoUpdate } from '$lib/server/handlers';
 
-// Always attach the API as a POST handler
-export const POST = superAPI({
+// Always attach the endpoint as a POST handler
+export const POST = endpoint({
 	// Make sure the path is the same as where you're attaching the handler.
 	// src/routes/api/+server.ts -> path: '/api'
 	path: '/api',
