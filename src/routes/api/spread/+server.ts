@@ -5,3 +5,5 @@ export const POST = endpoint({
 	path: '/api/spread',
 	actions
 });
+
+export type SpreadAPI = typeof POST;

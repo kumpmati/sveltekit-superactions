@@ -3,10 +3,11 @@
 	import { onMount } from 'svelte';
 	import type { Todo } from './api/tasks.js';
 	import type { API } from './api/+server.js';
+	import type { SpreadAPI } from './api/spread/+server.js';
 
 	let text: string;
 
-	$: spreadAPI = superActions('/api/spread');
+	$: spreadAPI = superActions<SpreadAPI>('/api/spread');
 	$: todoAPI = superActions<API>('/api');
 
 	let todos: Todo[] = [];
