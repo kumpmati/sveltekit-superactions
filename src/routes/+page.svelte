@@ -7,8 +7,8 @@
 
 	let text: string;
 
-	$: spreadAPI = superActions<SpreadAPI>('/api/spread');
-	$: todoAPI = superActions<API>('/api');
+	const spreadAPI = superActions<SpreadAPI>('/api/spread');
+	const todoAPI = superActions<API>('/api');
 
 	let todos: Todo[] = [];
 
