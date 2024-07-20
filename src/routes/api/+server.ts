@@ -6,26 +6,23 @@ import { error, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
 
 export const POST = endpoint({
-	path: '/api',
-	actions: {
-		getTodos,
-		createTodo: zod(todoSchema.omit({ id: true }), createTodo),
-		editTodo: joi(editTodoSchema, editTodo),
-		deleteTodo: zod(z.number().int(), deleteTodo),
+	getTodos,
+	createTodo: zod(todoSchema.omit({ id: true }), createTodo),
+	editTodo: joi(editTodoSchema, editTodo),
+	deleteTodo: zod(z.number().int(), deleteTodo),
 
-		shouldFail: async () => {
-			error(500, 'not implemented');
-		},
+	shouldFail: async () => {
+		error(500, 'not implemented');
+	},
 
-		shouldRedirect: async () => {
-			redirect(302, '/other-page');
-		},
+	shouldRedirect: async () => {
+		redirect(302, '/other-page');
+	},
 
-		extraHeaders: async (e) => {
-			console.log('headers', Object.fromEntries(e.request.headers));
+	extraHeaders: async (e) => {
+		console.log('headers', Object.fromEntries(e.request.headers));
 
-			return null;
-		}
+		return null;
 	}
 });
 
