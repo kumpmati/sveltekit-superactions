@@ -3,8 +3,8 @@ import { mapKeys } from './helpers.js';
 import type { ServerActionMap, ServerAPI, ServerOptions } from './types.js';
 import { parse, stringify } from 'devalue';
 
-const createDefaultHandler = <Path extends string, T extends ServerActionMap>(
-	serverOpts: ServerOptions<Path, T>
+const createDefaultHandler = <T extends ServerActionMap>(
+	serverOpts: ServerOptions<T>
 ): RequestHandler => {
 	return async (e) => {
 		const { request, url } = e;
@@ -39,14 +39,10 @@ const createDefaultHandler = <Path extends string, T extends ServerActionMap>(
  *
  * @param options (Optional) additional configuration
  */
-export const endpoint = <
-	Path extends string,
-	T extends ServerActionMap,
-	RH extends RequestHandler = RequestHandler
->(
-	options: ServerOptions<Path, T>
-): ServerAPI<Path, T, RH> => {
-	const handler = createDefaultHandler(options) as ServerAPI<Path, T, RH>;
+export const endpoint = <T extends ServerActionMap, RH extends RequestHandler = RequestHandler>(
+	options: ServerOptions<T>
+): ServerAPI<T, RH> => {
+	const handler = createDefaultHandler(options) as ServerAPI<T, RH>;
 
 	// add the SuperActions metadata to the handler function
 	handler.actions = {

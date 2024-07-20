@@ -5,35 +5,24 @@ const fetchMocker = createFetchMock(vi);
 fetchMocker.enableMocks();
 
 import { describe, expect, it } from 'vitest';
-import { endpoint } from './server.js';
 import { superActions } from './client.js';
 import { parse } from 'devalue';
-
-const noop = async () => null;
 
 describe('client', () => {
 	beforeEach(() => fetchMocker.resetMocks());
 
 	describe('superActions', () => {
-		it('contains all given actions as functions', () => {
-			const actions = { a: noop, b: noop };
-			const ep = endpoint({ path: '/', actions: actions });
+		it('returns a new proxy that returns a function for each property access', () => {
+			const client = superActions('/');
 
-			const client = superActions(ep.actions);
-
-			expect(Object.keys(client)).toEqual(Object.keys(actions));
-			Object.values(client).forEach((val) => expect(val).toBeTypeOf('function'));
+			expect(client.a).toBeTypeOf('function');
+			expect(client.b).toBeTypeOf('function');
 		});
 	});
 
 	describe('default handler', () => {
 		it('encodes the function args as a devalue string in the request body', async () => {
-			const api = endpoint({
-				path: '/',
-				actions: { a: async (e, body: { foo: string }) => body }
-			});
-
-			const client = superActions(api.actions);
+			const client = superActions('/');
 
 			client.a({ foo: 'bar' });
 

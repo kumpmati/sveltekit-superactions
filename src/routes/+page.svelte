@@ -1,15 +1,13 @@
 <script lang="ts">
 	import { superActions } from '$lib/client.js';
 	import { onMount } from 'svelte';
-	import type { PageData } from './$types.js';
 	import type { Todo } from './api/tasks.js';
-
-	export let data: PageData;
+	import type { API } from './api/+server.js';
 
 	let text: string;
 
-	$: spreadAPI = superActions(data.spreadAPI);
-	$: todoAPI = superActions(data.todoAPI);
+	$: spreadAPI = superActions('/api/spread');
+	$: todoAPI = superActions<API>('/api');
 
 	let todos: Todo[] = [];
 

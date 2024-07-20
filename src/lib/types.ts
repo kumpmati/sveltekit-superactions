@@ -1,13 +1,10 @@
 import type { RequestEvent, RequestHandler } from '@sveltejs/kit';
 
-export type ServerOptions<
-	Path extends string = string,
-	T extends Record<string, unknown> = Record<string, unknown>
-> = {
+export type ServerOptions<T extends Record<string, unknown> = Record<string, unknown>> = {
 	/**
 	 * Relative path where the API is mounted. (e.g. `/api`)
 	 */
-	path: Path;
+	path: string;
 
 	/**
 	 * All the actions you want to expose to the client.
@@ -45,14 +42,13 @@ export type ServerAction<Body = any, Res = any> = (e: RequestEvent, body: Body) 
 export type ServerActionMap = Record<string, ServerAction>;
 
 export type ServerAPI<
-	Path extends string = string,
 	T extends ServerActionMap = ServerActionMap,
 	RH extends RequestHandler = RequestHandler
 > = RH & {
 	/**
 	 * SuperActions metadata. Passed to the `superActions` function as an argument when loading the actions on the client.
 	 */
-	actions: ServerOptions<Path, T>;
+	actions: ServerOptions<T>;
 };
 
 export type ClientAction<T extends ServerAction, Body = Parameters<T>[1]> = (
@@ -64,7 +60,9 @@ export type ClientAction<T extends ServerAction, Body = Parameters<T>[1]> = (
  * Transforms a map of server actions to a map of client actions
  */
 export type ClientAPI<Endpoints extends ServerActionMap> = {
-	[Key in keyof Endpoints]: ClientAction<Endpoints[Key]>;
+	[Key in keyof Endpoints]: Endpoints[Key] extends ServerAction
+		? ClientAction<Endpoints[Key]>
+		: unknown;
 };
 
 /**
