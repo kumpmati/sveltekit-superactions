@@ -1,4 +1,4 @@
-<img src="https://raw.githubusercontent.com/kumpmati/superactions-docs/main/public/logo.webp" width="64px" align="center" alt="Superforms logo" /> 
+<img src="https://raw.githubusercontent.com/kumpmati/superactions-docs/main/public/logo.webp" width="64px" align="center" alt="Superactions logo" /> 
 <h1>SvelteKit Superactions</h1>
 
 [![Test](https://github.com/kumpmati/sveltekit-superactions/actions/workflows/test.yml/badge.svg)](https://github.com/kumpmati/sveltekit-superactions/actions/workflows/test.yml)
