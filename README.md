@@ -67,32 +67,21 @@ export const POST = endpoint({
 		my_handler: findTodo
 	}
 });
+
+// export the type of the endpoint, so that we get types in the client
+export type API = typeof POST;
 ```
 
-```ts
-// src/routes/+page.server.ts
-
-import { POST as todoAPI } from './some-route/+server.ts';
-
-export const load = async () => {
-	return {
-		// To use the actions in the client-side, we must always return them from a server load function.
-		// The name of the variable doesn't matter, and you can return as many as you want.
-		todoActions: todoAPI.actions
-	};
-};
-```
+And in any Svelte component import the `superActions` function and the exported types to instantiate the client.
 
 ```svelte
 <!-- src/routes/+page.svelte -->
 <script lang="ts">
 	import { superActions } from 'sveltekit-superactions';
+	import type { API } from './api/+server.js'; // exported API type
 
-	export let data;
-
-	// Instantiate client-side actions by calling
-	// superActions with the data from the load function
-	const api = superActions(data.todoActions);
+	// give the client the path and API types to instantiate it.
+	const api = superActions<API>('/api');
 </script>
 
 {#await api.getTodos()}

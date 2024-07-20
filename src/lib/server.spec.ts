@@ -125,29 +125,4 @@ describe('server', () => {
 			).rejects.toThrowError('test error');
 		});
 	});
-
-	describe('output API', () => {
-		it('has the input path in the output', () => {
-			const ep = endpoint({ path: '/my-custom-path', actions: {} });
-
-			expect(ep.actions.path).toEqual('/my-custom-path');
-		});
-
-		it('contains all input keys in the output', () => {
-			const obj = { a: noop, b: noop, c: noop, d: noop };
-
-			const expectedKeys = Object.keys(obj);
-
-			const ep = endpoint({ path: '/', actions: obj });
-
-			expect(Object.keys(ep.actions.actions)).toEqual(expectedKeys);
-		});
-
-		it('has serializable output', () => {
-			const ep = endpoint({ path: '/some-route', actions: { a: noop, b: noop } });
-
-			// API output should have only serializable information.
-			expect(JSON.parse(JSON.stringify(ep.actions))).toEqual(ep.actions);
-		});
-	});
 });

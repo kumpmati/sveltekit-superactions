@@ -8,7 +8,7 @@ import { z } from 'zod';
 export const POST = endpoint({
 	path: '/api',
 	actions: {
-		getTodos: getTodos,
+		getTodos,
 		createTodo: zod(todoSchema.omit({ id: true }), createTodo),
 		editTodo: joi(editTodoSchema, editTodo),
 		deleteTodo: zod(z.number().int(), deleteTodo),
@@ -28,3 +28,5 @@ export const POST = endpoint({
 		}
 	}
 });
+
+export type API = typeof POST;

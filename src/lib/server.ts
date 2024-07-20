@@ -1,5 +1,4 @@
 import { error, text, type RequestHandler } from '@sveltejs/kit';
-import { mapKeys } from './helpers.js';
 import type { ServerActionMap, ServerAPI, ServerOptions } from './types.js';
 import { parse, stringify } from 'devalue';
 
@@ -42,16 +41,5 @@ const createDefaultHandler = <T extends ServerActionMap>(
 export const endpoint = <T extends ServerActionMap, RH extends RequestHandler = RequestHandler>(
 	options: ServerOptions<T>
 ): ServerAPI<T, RH> => {
-	const handler = createDefaultHandler(options) as ServerAPI<T, RH>;
-
-	// add the SuperActions metadata to the handler function
-	handler.actions = {
-		...options,
-
-		// Dirty hack, but it works. This makes types simpler and
-		// makes ctrl+click in the client go to the correct place.
-		actions: mapKeys(options.actions, () => true) as unknown as T
-	};
-
-	return handler;
+	return createDefaultHandler(options) as ServerAPI<T, RH>;
 };

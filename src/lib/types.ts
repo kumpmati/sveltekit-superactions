@@ -1,5 +1,7 @@
 import type { RequestEvent, RequestHandler } from '@sveltejs/kit';
 
+declare const superactionsSymbol: unique symbol;
+
 export type ServerOptions<T extends Record<string, unknown> = Record<string, unknown>> = {
 	/**
 	 * Relative path where the API is mounted. (e.g. `/api`)
@@ -46,9 +48,9 @@ export type ServerAPI<
 	RH extends RequestHandler = RequestHandler
 > = RH & {
 	/**
-	 * SuperActions metadata. Passed to the `superActions` function as an argument when loading the actions on the client.
+	 * SuperActions server types (does not actually exist as a value).
 	 */
-	actions: ServerOptions<T>;
+	[superactionsSymbol]: ServerOptions<T>;
 };
 
 export type ClientAction<T extends ServerAction, Body = Parameters<T>[1]> = (
@@ -60,10 +62,14 @@ export type ClientAction<T extends ServerAction, Body = Parameters<T>[1]> = (
  * Transforms a map of server actions to a map of client actions
  */
 export type ClientAPI<Endpoints extends ServerActionMap> = {
-	[Key in keyof Endpoints]: ClientAction<Endpoints[Key]>;
+	[Key in keyof Endpoints]: Endpoints[Key] extends ServerAction
+		? ClientAction<Endpoints[Key]>
+		: unknown;
 };
 
 /**
  * Infers the client-side API type from the given ServerAPI
  */
-export type InferClientAPI<T extends ServerAPI> = ClientAPI<T['actions']['actions']>;
+export type InferClientAPI<T extends ServerAPI> = ClientAPI<
+	T[typeof superactionsSymbol]['actions']
+>;

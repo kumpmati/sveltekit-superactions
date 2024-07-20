@@ -1,29 +1,20 @@
 // Reexport your entry components here
 
 import { error } from '@sveltejs/kit';
-import { mapKeys } from './helpers.js';
-import type {
-	ClientOptions,
-	ClientAPI,
-	ServerActionMap,
-	ServerAPI,
-	ClientActionOptions
-} from './types.js';
+import type { ClientOptions, ClientActionOptions, InferClientAPI, ServerAPI } from './types.js';
 import { goto } from '$app/navigation';
 import { parse, stringify } from 'devalue';
 
-const createDefaultHandler = <E extends ServerActionMap>(
-	api: ServerAPI<E>['actions'],
-	clientOpts: ClientOptions
-) => {
+const createDefaultHandler = (path: string, clientOpts: ClientOptions) => {
 	return async (endpoint: string, body: unknown, options?: ClientActionOptions) => {
-		const url = `${api.path}?_sa=${endpoint}`;
+		const url = `${path}?_sa=${endpoint}`;
 
 		const fetchOptions: RequestInit = {
 			method: 'POST',
 			body: body ? stringify(body) : undefined
 		};
 
+		// merge user-provided options with default options
 		Object.assign(fetchOptions, options?.fetch);
 
 		const response = await fetch(url, fetchOptions);
@@ -44,17 +35,23 @@ const createDefaultHandler = <E extends ServerActionMap>(
 /**
  * Creates a client from the given API actions.
  *
- * @param actions API actions
+ * @param path Relative URL where the endpoint is mounted
+ * @param opts (Optional) extra configuration for the client
  */
-export const superActions = <E extends ServerActionMap>(
-	actions: ServerAPI<E>['actions'],
+export const superActions = <T extends ServerAPI>(
+	path: string,
 	opts: ClientOptions = {}
-): ClientAPI<E> => {
-	const handler = createDefaultHandler<E>(actions, opts);
+): InferClientAPI<T> => {
+	const handler = createDefaultHandler(path, opts);
 
-	// map each key of the api to a client-side action using the default handler.
-	return mapKeys(
-		actions.actions,
-		(key) => (body: unknown, opts?: ClientActionOptions) => handler(key as string, body, opts)
-	) as unknown as ClientAPI<E>;
+	// TODO: support nesting in the API
+	return new Proxy({} as Record<string, unknown>, {
+		get(_, key) {
+			if (typeof key === 'symbol') throw new Error('action name cannot be a symbol');
+
+			return (body: unknown, opts?: ClientActionOptions) => {
+				return handler(key, body, opts);
+			};
+		}
+	}) as InferClientAPI<T>;
 };
