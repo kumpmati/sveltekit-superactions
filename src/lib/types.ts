@@ -1,6 +1,6 @@
 import type { RequestEvent, RequestHandler } from '@sveltejs/kit';
 
-declare const symbol: unique symbol;
+declare const superactionsSymbol: unique symbol;
 
 export type ServerOptions<T extends Record<string, unknown> = Record<string, unknown>> = {
 	/**
@@ -50,7 +50,7 @@ export type ServerAPI<
 	/**
 	 * SuperActions server types (does not actually exist as a value).
 	 */
-	[symbol]: ServerOptions<T>;
+	[superactionsSymbol]: ServerOptions<T>;
 };
 
 export type ClientAction<T extends ServerAction, Body = Parameters<T>[1]> = (
@@ -70,4 +70,6 @@ export type ClientAPI<Endpoints extends ServerActionMap> = {
 /**
  * Infers the client-side API type from the given ServerAPI
  */
-export type InferClientAPI<T extends ServerAPI> = ClientAPI<T[typeof symbol]['actions']>;
+export type InferClientAPI<T extends ServerAPI> = ClientAPI<
+	T[typeof superactionsSymbol]['actions']
+>;
