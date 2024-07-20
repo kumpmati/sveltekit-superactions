@@ -47,7 +47,7 @@ export const superActions = <T extends Endpoint>(
 
 	return new DeepProxy(async function () {} as unknown as InferClient<T>, {
 		get(_, key) {
-			if (typeof key === 'symbol') throw new Error('action name cannot be a symbol');
+			if (typeof key === 'symbol') throw new Error('symbols cannot be used as action names');
 
 			return this.nest();
 		},
