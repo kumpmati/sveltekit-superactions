@@ -1,9 +1,21 @@
 import { error, text, type RequestHandler } from '@sveltejs/kit';
-import type { ActionMap, Endpoint } from './types.js';
+import type { ActionMap, Endpoint, EndpointOptions, Middleware } from './types.js';
 import { parse, stringify } from 'devalue';
-import { getEndpointByPath } from './helpers.js';
+import { getActionByPath } from './helpers.js';
 
-const createDefaultHandler = <T extends ActionMap>(actions: T): RequestHandler => {
+const applyMiddleware = async (
+	args: Parameters<Middleware>[0],
+	middleware: Middleware[]
+): Promise<void> => {
+	for (const action of middleware) {
+		await action(args);
+	}
+};
+
+const createDefaultHandler = <T extends ActionMap>(
+	actions: T,
+	options: EndpointOptions = {}
+): RequestHandler => {
 	return async (e) => {
 		const { request, url } = e;
 
@@ -16,14 +28,22 @@ const createDefaultHandler = <T extends ActionMap>(actions: T): RequestHandler =
 			error(400, 'invalid query parameters');
 		}
 
-		const endpoint = getEndpointByPath(actions, (key ?? '').split('.'));
-		if (!endpoint) {
+		const action = getActionByPath(actions, (key ?? '').split('.'));
+		if (!action) {
 			error(404, 'not found');
 		}
 
 		const body = await request.text().then((d) => (d ? parse(d) : null));
 
-		const response = await endpoint(e, body);
+		if (options?.pre?.length) {
+			await applyMiddleware({ action: key, e, body }, options.pre);
+		}
+
+		const response = await action(e, body);
+
+		if (options.post?.length) {
+			await applyMiddleware({ action: key, e, body }, options.post);
+		}
 
 		return text(stringify(response));
 	};
@@ -36,9 +56,11 @@ const createDefaultHandler = <T extends ActionMap>(actions: T): RequestHandler =
  * It returns a request handler function that can be mounted as a POST handler.
  *
  * @param actions The functions to expose to the client.
+ * @param options (Optional) additional configuration such as middleware.
  */
-export const endpoint = <T extends ActionMap, RH extends RequestHandler = RequestHandler>(
-	actions: T
-): Endpoint<T, RH> => {
-	return createDefaultHandler(actions) as Endpoint<T, RH>;
+export const endpoint = <T extends ActionMap>(
+	actions: T,
+	options: EndpointOptions = {}
+): Endpoint<T, RequestHandler> => {
+	return createDefaultHandler(actions, options) as Endpoint<T, RequestHandler>;
 };

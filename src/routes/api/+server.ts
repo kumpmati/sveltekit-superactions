@@ -5,25 +5,31 @@ import { zod } from '$lib/validate/zod.js';
 import { error, redirect } from '@sveltejs/kit';
 import { z } from 'zod';
 
-export const POST = endpoint({
-	getTodos,
-	createTodo: zod(todoSchema.omit({ id: true }), createTodo),
-	editTodo: joi(editTodoSchema, editTodo),
-	deleteTodo: zod(z.number().int(), deleteTodo),
+export const POST = endpoint(
+	{
+		getTodos,
+		createTodo: zod(todoSchema.omit({ id: true }), createTodo),
+		editTodo: joi(editTodoSchema, editTodo),
+		deleteTodo: zod(z.number().int(), deleteTodo),
 
-	shouldFail: async () => {
-		error(500, 'not implemented');
+		shouldFail: async () => {
+			error(500, 'not implemented');
+		},
+
+		shouldRedirect: async () => {
+			redirect(302, '/other-page');
+		},
+
+		extraHeaders: async (e) => {
+			console.log('headers', Object.fromEntries(e.request.headers));
+
+			return null;
+		}
 	},
-
-	shouldRedirect: async () => {
-		redirect(302, '/other-page');
-	},
-
-	extraHeaders: async (e) => {
-		console.log('headers', Object.fromEntries(e.request.headers));
-
-		return null;
+	{
+		pre: [({ action }) => console.time(action)],
+		post: [({ action }) => console.timeEnd(action)]
 	}
-});
+);
 
 export type API = typeof POST;

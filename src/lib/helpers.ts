@@ -25,7 +25,7 @@ export const mapKeys = <T extends Record<string, unknown>, V>(
  * @param path Array of properties in the endpoint
  * @returns Action or null if none match the given path
  */
-export const getEndpointByPath = <T extends ActionMap>(
+export const getActionByPath = <T extends ActionMap>(
 	endpoint: T,
 	path: string[]
 ): Action | null => {
@@ -33,7 +33,7 @@ export const getEndpointByPath = <T extends ActionMap>(
 
 	const part = path[0];
 
-	if (typeof endpoint[part] === 'object') return getEndpointByPath(endpoint[part], path.slice(1));
+	if (typeof endpoint[part] === 'object') return getActionByPath(endpoint[part], path.slice(1));
 	if (typeof endpoint[part] === 'function') return endpoint[part];
 
 	return null;

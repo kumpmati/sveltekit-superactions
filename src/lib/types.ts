@@ -1,4 +1,4 @@
-import type { RequestEvent, RequestHandler } from '@sveltejs/kit';
+import type { MaybePromise, RequestEvent, RequestHandler } from '@sveltejs/kit';
 
 const superactionsSymbol = Symbol('superactions');
 
@@ -25,6 +25,32 @@ export type ClientActionOptions = {
 	 */
 	followRedirects?: boolean;
 };
+
+export type EndpointOptions = {
+	/**
+	 * Middleware to run before every action call.
+	 */
+	pre?: Middleware[];
+
+	/**
+	 * Middleware to run after every action call.
+	 */
+	post?: Middleware[];
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type Middleware<Body = any, Res = any> = (args: {
+	/**
+	 * The request event provided by SvelteKit.
+	 */
+	e: RequestEvent;
+
+	/**
+	 * Decoded body.
+	 */
+	body: Body;
+	action: string;
+}) => MaybePromise<Res>;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Action<Body = any, Res = any> = (e: RequestEvent, body: Body) => Promise<Res>;
