@@ -1,10 +1,8 @@
 import { error, text, type RequestHandler } from '@sveltejs/kit';
-import type { ServerActionMap, ServerAPI, ServerOptions } from './types.js';
+import type { ServerActionMap, ServerAPI } from './types.js';
 import { parse, stringify } from 'devalue';
 
-const createDefaultHandler = <T extends ServerActionMap>(
-	serverOpts: ServerOptions<T>
-): RequestHandler => {
+const createDefaultHandler = <T extends ServerActionMap>(actions: T): RequestHandler => {
 	return async (e) => {
 		const { request, url } = e;
 
@@ -17,7 +15,7 @@ const createDefaultHandler = <T extends ServerActionMap>(
 			error(400, 'invalid query parameters');
 		}
 
-		const endpoint = serverOpts.actions[key as keyof T];
+		const endpoint = actions[key as keyof T];
 		if (!endpoint) {
 			error(404, 'not found');
 		}
@@ -39,7 +37,7 @@ const createDefaultHandler = <T extends ServerActionMap>(
  * @param options (Optional) additional configuration
  */
 export const endpoint = <T extends ServerActionMap, RH extends RequestHandler = RequestHandler>(
-	options: ServerOptions<T>
+	actions: T
 ): ServerAPI<T, RH> => {
-	return createDefaultHandler(options) as ServerAPI<T, RH>;
+	return createDefaultHandler(actions) as ServerAPI<T, RH>;
 };

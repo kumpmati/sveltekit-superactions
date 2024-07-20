@@ -18,7 +18,7 @@ describe('server', () => {
 
 	describe('default handler', () => {
 		it('throws when receiving a non-POST request', async () => {
-			const ep = endpoint({ path: '/', actions: { a: noop } });
+			const ep = endpoint({ a: noop });
 
 			try {
 				await ep({
@@ -33,7 +33,7 @@ describe('server', () => {
 		});
 
 		it('throws when called without proper url params', async () => {
-			const ep = endpoint({ path: '/', actions: { a: noop } });
+			const ep = endpoint({ a: noop });
 
 			try {
 				await ep({
@@ -48,7 +48,7 @@ describe('server', () => {
 		});
 
 		it('throws when an action is not found', async () => {
-			const ep = endpoint({ path: '/', actions: { a: noop } });
+			const ep = endpoint({ a: noop });
 
 			try {
 				await ep({
@@ -65,7 +65,7 @@ describe('server', () => {
 		it('runs the action function and returns its return value as a devalue string', async () => {
 			const action = vi.fn(async () => ({ foo: 'bar' }));
 
-			const ep = endpoint({ path: '/', actions: { a: action } });
+			const ep = endpoint({ a: action });
 
 			try {
 				const res = await ep({
@@ -94,7 +94,7 @@ describe('server', () => {
 				return null;
 			});
 
-			const ep = endpoint({ path: '/', actions: { a: action } });
+			const ep = endpoint({ a: action });
 
 			await ep({
 				request: {
@@ -109,11 +109,8 @@ describe('server', () => {
 
 		it('throws whatever the action throws', async () => {
 			const ep = endpoint({
-				path: '/',
-				actions: {
-					a: async () => {
-						throw new Error('test error');
-					}
+				a: async () => {
+					throw new Error('test error');
 				}
 			});
 
