@@ -1,4 +1,4 @@
-import type { ServerAction } from '$lib/types.js';
+import type { Action } from '$lib/types.js';
 import { error } from '@sveltejs/kit';
 import type { Schema } from 'joi';
 
@@ -10,8 +10,8 @@ import type { Schema } from 'joi';
  */
 export const joi = <Body = unknown, Res = unknown>(
 	schema: Schema<Body>,
-	action: ServerAction<Body, Res>
-): ServerAction<Body, Res> => {
+	action: Action<Body, Res>
+): Action<Body, Res> => {
 	return async (e, rawBody) => {
 		const parsed = schema.validate(rawBody);
 		if (parsed.error) {

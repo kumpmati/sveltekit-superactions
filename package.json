@@ -78,6 +78,7 @@
 	"types": "./dist/index.d.ts",
 	"type": "module",
 	"dependencies": {
-		"devalue": "^5.0.0"
+		"devalue": "^5.0.0",
+		"proxy-deep": "^4.0.1"
 	}
 }

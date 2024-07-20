@@ -1,9 +1,10 @@
 // Reexport your entry components here
 
 import { error } from '@sveltejs/kit';
-import type { ClientOptions, ClientActionOptions, InferClientAPI, ServerAPI } from './types.js';
+import type { ClientOptions, ClientActionOptions, InferClient, Endpoint } from './types.js';
 import { goto } from '$app/navigation';
 import { parse, stringify } from 'devalue';
+import { DeepProxy } from 'proxy-deep';
 
 const createDefaultHandler = (path: string, clientOpts: ClientOptions) => {
 	return async (endpoint: string, body: unknown, options?: ClientActionOptions) => {
@@ -38,20 +39,21 @@ const createDefaultHandler = (path: string, clientOpts: ClientOptions) => {
  * @param path Relative URL where the endpoint is mounted
  * @param opts (Optional) extra configuration for the client
  */
-export const superActions = <T extends ServerAPI>(
+export const superActions = <T extends Endpoint>(
 	path: string,
 	opts: ClientOptions = {}
-): InferClientAPI<T> => {
+): InferClient<T> => {
 	const handler = createDefaultHandler(path, opts);
 
-	// TODO: support nesting in the API
-	return new Proxy({} as Record<string, unknown>, {
+	return new DeepProxy(async function () {} as unknown as InferClient<T>, {
 		get(_, key) {
 			if (typeof key === 'symbol') throw new Error('action name cannot be a symbol');
 
-			return (body: unknown, opts?: ClientActionOptions) => {
-				return handler(key, body, opts);
-			};
+			return this.nest();
+		},
+
+		apply(target, thisArg, argArray) {
+			return handler(this.path.join('.'), argArray[0], argArray?.[1]);
 		}
-	}) as InferClientAPI<T>;
+	});
 };

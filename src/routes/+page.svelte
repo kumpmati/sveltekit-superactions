@@ -4,10 +4,12 @@
 	import type { Todo } from './api/tasks.js';
 	import type { API } from './api/+server.js';
 	import type { SpreadAPI } from './api/spread/+server.js';
+	import type { NestedAPI } from './api/nested/+server.js';
 
 	let text: string;
 
-	const spreadAPI = superActions<SpreadAPI>('/api/spread');
+	const nested = superActions<NestedAPI>('/api/nested');
+	const { greet } = superActions<SpreadAPI>('/api/spread');
 	const todoAPI = superActions<API>('/api');
 
 	let todos: Todo[] = [];
@@ -16,14 +18,17 @@
 		todoAPI.getTodos().then((d) => (todos = d));
 	};
 
-	onMount(() => {
+	onMount(async () => {
+		console.log('second.foo', await nested.second.foo(5));
+		console.log('second.third.bar', await nested.second.third.bar());
+		console.log('utils.beanify', await nested.utils.beanify('man'));
 		getData();
 	});
 </script>
 
 <h1>SvelteKit Superactions TODO App</h1>
 
-<button on:click={() => spreadAPI.greet('World').then((d) => alert(d.greeting))}>Greet</button>
+<button on:click={() => greet('World').then((d) => alert(d.greeting))}>Greet</button>
 
 <ul>
 	{#each todos as todo}

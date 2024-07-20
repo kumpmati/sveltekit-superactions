@@ -1,4 +1,4 @@
-import type { ServerAction } from '$lib/types.js';
+import type { Action } from '$lib/types.js';
 import { error } from '@sveltejs/kit';
 import type { ZodType } from 'zod';
 
@@ -10,8 +10,8 @@ import type { ZodType } from 'zod';
  */
 export const zod = <Body = unknown, Res = unknown>(
 	schema: ZodType<Body>,
-	action: ServerAction<Body, Res>
-): ServerAction<Body, Res> => {
+	action: Action<Body, Res>
+): Action<Body, Res> => {
 	return async (e, rawBody) => {
 		const parsed = schema.safeParse(rawBody);
 		if (!parsed.success) {
