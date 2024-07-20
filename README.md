@@ -48,24 +48,19 @@ import { deleteTodo, findTodo, type TodoUpdate } from '$lib/server/handlers';
 
 // Always attach the endpoint as a POST handler
 export const POST = endpoint({
-	// Make sure the path is the same as where you're attaching the handler.
-	// src/routes/api/+server.ts -> path: '/api'
-	path: '/api',
-	actions: {
-		// e is the RequestEvent provided by SvelteKit,
-		// and the second argument is the request body decoded as JSON.
-		editTodo: async (e, body: TodoUpdate) => {
-			// The returned value is automatically serialized as JSON.
-			// The client-side function gets its return type directly from the return type of its server action
-			return await db.update(body.id, body);
-		},
+	// e is the RequestEvent provided by SvelteKit,
+	// and the second argument is the request body decoded as JSON.
+	editTodo: async (e, body: TodoUpdate) => {
+		// The returned value is automatically serialized as JSON.
+		// The client-side function gets its return type directly from the return type of its server action
+		return await db.update(body.id, body);
+	},
 
-		// You can also just import handlers from other files and group them here.
-		deleteTodo,
+	// You can also just import handlers from other files and group them here.
+	deleteTodo,
 
-		// Or give them custom names
-		my_handler: findTodo
-	}
+	// Or give them custom names
+	my_handler: findTodo
 });
 
 // export the type of the endpoint, so that we get types in the client
