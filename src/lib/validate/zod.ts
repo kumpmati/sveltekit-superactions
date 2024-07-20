@@ -3,9 +3,9 @@ import { error } from '@sveltejs/kit';
 import type { ZodType } from 'zod';
 
 /**
- * Returns a new ServerAction that validates the incoming request body using Zod
+ * Returns a new Action that validates the incoming request body using Zod
  * @param schema Zod schema
- * @param action ServerAction
+ * @param action Action
  * @returns
  */
 export const zod = <Body = unknown, Res = unknown>(

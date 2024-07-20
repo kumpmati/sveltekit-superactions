@@ -61,6 +61,6 @@ export type Client<Endpoints extends ActionMap> = {
 };
 
 /**
- * Infers the client-side API type from the given ServerAPI
+ * Infers the client-side API type from the given Endpoint
  */
 export type InferClient<T extends Endpoint> = Client<T[typeof superactionsSymbol]>;

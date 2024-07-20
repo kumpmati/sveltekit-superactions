@@ -17,5 +17,3 @@ export const POST = endpoint({
 });
 
 export type NestedAPI = typeof POST;
-
-// type A = NestedAPI[typeof superactionsSymbol]['second'];

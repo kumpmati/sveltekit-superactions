@@ -3,9 +3,9 @@ import { error } from '@sveltejs/kit';
 import type { Schema } from 'joi';
 
 /**
- * Returns a new ServerAction that validates the incoming request body using Joi
+ * Returns a new Action that validates the incoming request body using Joi
  * @param schema Joi schema
- * @param action ServerAction
+ * @param action Action
  * @returns
  */
 export const joi = <Body = unknown, Res = unknown>(
