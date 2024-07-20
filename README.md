@@ -5,7 +5,7 @@
 
 Call your server code from the client like normal functions.
 
-**🚧 This library is in an early state, and breaking changes will likely happen before a v1.0 release! 🚧**
+**🚧 This library is in an early state, and breaking changes will likely happen before the API is stabilised for a v1.0 release! 🚧**
 
 [Documentation](https://superactions.matsku.dev)
 
