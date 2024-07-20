@@ -1,14 +1,7 @@
 import { error, text, type RequestHandler } from '@sveltejs/kit';
 import type { ActionMap, Endpoint } from './types.js';
 import { parse, stringify } from 'devalue';
-
-const getEndpointByPath = <T extends ActionMap>(target: T, path: string[]) => {
-	for (const part of path) {
-		if (typeof target[part] === 'function') return target[part];
-
-		return getEndpointByPath(target[part], path.slice(1));
-	}
-};
+import { getEndpointByPath } from './helpers.js';
 
 const createDefaultHandler = <T extends ActionMap>(actions: T): RequestHandler => {
 	return async (e) => {
@@ -42,7 +35,7 @@ const createDefaultHandler = <T extends ActionMap>(actions: T): RequestHandler =
  *
  * It returns a request handler function that can be mounted as a POST handler.
  *
- * @param options (Optional) additional configuration
+ * @param actions The functions to expose to the client.
  */
 export const endpoint = <T extends ActionMap, RH extends RequestHandler = RequestHandler>(
 	actions: T
