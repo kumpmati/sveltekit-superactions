@@ -1,11 +1,11 @@
-<img src="https://raw.githubusercontent.com/kumpmati/superactions-docs/main/public/logo.webp" width="64px" align="center" alt="Superforms logo" /> 
+<img src="https://raw.githubusercontent.com/kumpmati/superactions-docs/main/public/logo.webp" width="64px" align="center" alt="Superactions logo" /> 
 <h1>SvelteKit Superactions</h1>
 
 [![Test](https://github.com/kumpmati/sveltekit-superactions/actions/workflows/test.yml/badge.svg)](https://github.com/kumpmati/sveltekit-superactions/actions/workflows/test.yml)
 
 Call your server code from the client like normal functions.
 
-**🚧 This library is in an early state, and breaking changes will likely happen before a v1.0 release! 🚧**
+**🚧 This library is in an early state, and breaking changes will likely happen before the API is stabilised for a v1.0 release! 🚧**
 
 [Documentation](https://superactions.matsku.dev)
 

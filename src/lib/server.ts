@@ -1,8 +1,9 @@
 import { error, text, type RequestHandler } from '@sveltejs/kit';
-import type { ServerActionMap, ServerAPI } from './types.js';
+import type { ActionMap, Endpoint } from './types.js';
 import { parse, stringify } from 'devalue';
+import { getEndpointByPath } from './helpers.js';
 
-const createDefaultHandler = <T extends ServerActionMap>(actions: T): RequestHandler => {
+const createDefaultHandler = <T extends ActionMap>(actions: T): RequestHandler => {
 	return async (e) => {
 		const { request, url } = e;
 
@@ -15,7 +16,7 @@ const createDefaultHandler = <T extends ServerActionMap>(actions: T): RequestHan
 			error(400, 'invalid query parameters');
 		}
 
-		const endpoint = actions[key as keyof T];
+		const endpoint = getEndpointByPath(actions, (key ?? '').split('.'));
 		if (!endpoint) {
 			error(404, 'not found');
 		}
@@ -34,10 +35,10 @@ const createDefaultHandler = <T extends ServerActionMap>(actions: T): RequestHan
  *
  * It returns a request handler function that can be mounted as a POST handler.
  *
- * @param options (Optional) additional configuration
+ * @param actions The functions to expose to the client.
  */
-export const endpoint = <T extends ServerActionMap, RH extends RequestHandler = RequestHandler>(
+export const endpoint = <T extends ActionMap, RH extends RequestHandler = RequestHandler>(
 	actions: T
-): ServerAPI<T, RH> => {
-	return createDefaultHandler(actions) as ServerAPI<T, RH>;
+): Endpoint<T, RH> => {
+	return createDefaultHandler(actions) as Endpoint<T, RH>;
 };

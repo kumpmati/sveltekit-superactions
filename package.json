@@ -1,6 +1,6 @@
 {
 	"name": "sveltekit-superactions",
-	"version": "0.6.0",
+	"version": "0.7.0",
 	"repository": {
 		"url": "https://github.com/kumpmati/sveltekit-superactions"
 	},
@@ -78,6 +78,7 @@
 	"types": "./dist/index.d.ts",
 	"type": "module",
 	"dependencies": {
-		"devalue": "^5.0.0"
+		"devalue": "^5.0.0",
+		"proxy-deep": "^4.0.1"
 	}
 }

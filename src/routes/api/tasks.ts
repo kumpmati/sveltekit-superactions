@@ -1,4 +1,4 @@
-import type { ServerAction } from '$lib/types.js';
+import type { Action } from '$lib/types.js';
 import { error, type RequestEvent } from '@sveltejs/kit';
 import Joi from 'joi';
 import { z } from 'zod';
@@ -41,7 +41,7 @@ export const editTodoSchema = Joi.object({
 	})
 });
 
-export const editTodo: ServerAction<EditTodoBody> = async (e, body) => {
+export const editTodo: Action<EditTodoBody> = async (e, body) => {
 	await wait(100);
 
 	const found = todos.find((t) => t.id === body.id);

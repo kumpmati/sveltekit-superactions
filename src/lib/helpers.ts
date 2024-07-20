@@ -1,3 +1,5 @@
+import type { Action, ActionMap } from './types.js';
+
 /**
  * Helper function that creates a new object with the same keys but different values
  * @param val Original object
@@ -14,4 +16,25 @@ export const mapKeys = <T extends Record<string, unknown>, V>(
 	}
 
 	return obj;
+};
+
+/**
+ * Returns an arbitrarily nested action from the given endpoint using the given path.
+ *
+ * @param endpoint Endpoint to traverse
+ * @param path Array of properties in the endpoint
+ * @returns Action or null if none match the given path
+ */
+export const getEndpointByPath = <T extends ActionMap>(
+	endpoint: T,
+	path: string[]
+): Action | null => {
+	if (!path.length) return null;
+
+	const part = path[0];
+
+	if (typeof endpoint[part] === 'object') return getEndpointByPath(endpoint[part], path.slice(1));
+	if (typeof endpoint[part] === 'function') return endpoint[part];
+
+	return null;
 };

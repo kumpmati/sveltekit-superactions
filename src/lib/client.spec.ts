@@ -7,6 +7,7 @@ fetchMocker.enableMocks();
 import { describe, expect, it } from 'vitest';
 import { superActions } from './client.js';
 import { parse } from 'devalue';
+import type { Action, Endpoint } from './types.js';
 
 describe('client', () => {
 	beforeEach(() => fetchMocker.resetMocks());
@@ -22,7 +23,7 @@ describe('client', () => {
 
 	describe('default handler', () => {
 		it('encodes the function args as a devalue string in the request body', async () => {
-			const client = superActions('/');
+			const client = superActions<Endpoint<Record<'a', Action>>>('/');
 
 			client.a({ foo: 'bar' });
 
