@@ -20,8 +20,8 @@ jobs:
           fetch-depth: '0'
 
       - name: Bump version and push tag
-        if: ${{ !contains(join(github.event.commits.*.message), '#skip') }}
         uses: anothrNick/github-tag-action@1.67.0 # Don't use @master or @v1 unless you're happy to test the latest version
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           WITH_V: true
+          DEFAULT_BUMP: none
