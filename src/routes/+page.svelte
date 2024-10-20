@@ -6,13 +6,13 @@
 	import type { SpreadAPI } from './api/spread/+server.js';
 	import type { NestedAPI } from './api/nested/+server.js';
 
-	let text: string;
+	let text: string = $state('');
 
 	const nested = superActions<NestedAPI>('/api/nested');
 	const { greet } = superActions<SpreadAPI>('/api/spread');
 	const todoAPI = superActions<API>('/api');
 
-	let todos: Todo[] = [];
+	let todos: Todo[] = $state([]);
 
 	const getData = () => {
 		todoAPI.getTodos().then((d) => (todos = d));
@@ -28,7 +28,7 @@
 
 <h1>SvelteKit Superactions TODO App</h1>
 
-<button on:click={() => greet('World').then((d) => alert(d.greeting))}>Greet</button>
+<button onclick={() => greet('World').then((d) => alert(d.greeting))}>Greet</button>
 
 <ul>
 	{#each todos as todo}
@@ -37,29 +37,29 @@
 			<input
 				type="checkbox"
 				checked={todo.done}
-				on:click={() =>
+				onclick={() =>
 					todoAPI.editTodo({ id: todo.id, payload: { done: !todo.done } }).then(() => getData())}
 			/>
 
-			<button on:click={() => todoAPI.deleteTodo(todo.id).then(() => getData())}>x</button>
+			<button onclick={() => todoAPI.deleteTodo(todo.id).then(() => getData())}>x</button>
 		</li>
 	{/each}
 </ul>
 
 <input type="text" required bind:value={text} />
-<button on:click={() => todoAPI.createTodo({ text, done: false }).then(() => getData())}>
+<button onclick={() => todoAPI.createTodo({ text, done: false }).then(() => getData())}>
 	Add TODO
 </button>
 
 <br />
 
-<button on:click={() => todoAPI.shouldFail()}> Fail </button>
-<button on:click={() => todoAPI.shouldRedirect(undefined, { followRedirects: true })}>
+<button onclick={() => todoAPI.shouldFail()}> Fail </button>
+<button onclick={() => todoAPI.shouldRedirect(undefined, { followRedirects: true })}>
 	Redirect
 </button>
 
 <button
-	on:click={() =>
+	onclick={() =>
 		todoAPI.extraHeaders(undefined, {
 			fetch: {
 				headers: {
