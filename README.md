@@ -1,3 +1,5 @@
+**NOTE: I'm archiving this repository in favor of SvelteKit's own [remote functions](https://svelte.dev/docs/kit/remote-functions), which are the recommended way forward.**
+
 <img src="https://raw.githubusercontent.com/kumpmati/superactions-docs/main/public/logo.webp" width="64px" align="center" alt="Superactions logo" /> 
 <h1>SvelteKit Superactions</h1>
 
